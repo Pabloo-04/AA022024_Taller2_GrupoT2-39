@@ -9,18 +9,17 @@ struct Empleado {
     float salario;
 };
 
-int heapSize = 0;  
-Empleado empleados[1000]; 
+int heapSize = 0;  //capacidad actual
+int maxSize = 1200; //capacidad maxima
+Empleado empleados[1200];  //Heap global
 
 void leerArchivo() {
     ifstream file("empleados.txt"); 
    
     if (!file.is_open()) {
-        cout << "Error: No se pudo abrir el archivo. Verifique la ruta." << endl;
+        cout << "Error: No se pudo abrir el archivo." << endl;
         return;
-    } else {
-        cout << "Archivo abierto correctamente." << endl;
-    }
+    } 
 
     string line;
     while (getline(file, line)) {
@@ -29,9 +28,9 @@ void leerArchivo() {
 
         string nombre = line.substr(0, pos1);
         string apellido = line.substr(pos1 + 1, pos2 - pos1 - 1);
-        float salario = stof(line.substr(pos2 + 1)); // Convertir a float
+        float salario = stof(line.substr(pos2 + 1)); 
 
-        if (heapSize < 1000) { // Asegúrate de no exceder el tamaño del arreglo
+        if (heapSize < 1000) { 
             empleados[heapSize].nombre = nombre;
             empleados[heapSize].apellido = apellido;
             empleados[heapSize].salario = salario;
@@ -61,6 +60,8 @@ void heapMaximo(Empleado arrLocal[], int l, int i) { //Función para mantener pr
     }
 }
 
+
+
 void construirMonticuloMax(Empleado arrLocal[], int l){
     for (int i = (l / 2) - 1; i >= 0; i--) { //Constuyendo heap máximo.
         heapMaximo(arrLocal, l, i);
@@ -68,8 +69,39 @@ void construirMonticuloMax(Empleado arrLocal[], int l){
 }
 
 
+void insertar(Empleado empleado) {// Insertar en heap
+    if (heapSize == maxSize) {
+        cout << "El heap de empleados está lleno\n";
+        return;
+    }
+    empleados[heapSize] = empleado;
+    heapSize++;
+    construirMonticuloMax(empleados, heapSize);  // Asegurar propiedad de max-heap
+}
 
-void ordenarMonticulo(Empleado arrLocal[], int l) {
+int buscar(Empleado empleado) { //Funcion de buscar por valor
+    for (int i = 0; i < heapSize; i++) {
+        if (empleados[i].nombre == empleado.nombre && empleados[i].apellido == empleado.apellido ) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+void eliminar(Empleado empleado) { //Funcion de eliminar por valor 
+    int indice = buscar(empleado);
+    if (indice == -1) { 
+        cout << "No se encontró el elemento.\n";
+        return;
+    }
+
+    empleados[indice] = empleados[heapSize - 1];
+    heapSize--;
+    construirMonticuloMax(empleados, heapSize); 
+}
+
+
+void ordenarMonticulo(Empleado arrLocal[], int l) { //Ordenar heap
 
     construirMonticuloMax(arrLocal, l);
 
@@ -79,7 +111,9 @@ void ordenarMonticulo(Empleado arrLocal[], int l) {
     }
 }
 
-void mostrarDescendente() {
+
+
+void mostrarDescendente() {//Mostrar heap
     ordenarMonticulo(empleados, heapSize);
     
     for (int i = heapSize - 1; i >= 0; i--) {
@@ -93,32 +127,24 @@ int main() {
     int opcion;
 
     do {
-        cout << "1. Buscar empleado" << "\n";
-        cout << "2. Eliminar empleado" << "\n";
-        cout << "3. Mostrar salarios en orden descendente" << "\n";
-        cout << "4. Salir" << "\n";
+        cout << "1. Mostrar salarios en orden descendente" << "\n";
+        cout << "2. Salir" << "\n";
         cout << "Seleccione una opción: ";
         cin >> opcion;
 
         switch (opcion) {
             case 1:
-                // Implementar búsqueda de empleado aquí
-                break;
-            case 2:
-                // Implementar eliminación de empleado aquí
-                break;
-            case 3:
                 mostrarDescendente();
                 cout << "\n";
                 break;
-            case 4:
+            case 2:
                 cout << "Finalizando programa" << "\n";
                 break;
             default:
                 cout << "Opción incorrecta" << "\n";
                 break;
         }
-    } while (opcion != 4);
+    } while (opcion != 2);
 
     return 0;
 }
